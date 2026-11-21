@@ -1,5 +1,11 @@
 var builder = WebApplication.CreateBuilder(args);
 
+var sqlUsername = GetConfigurationKey("POSTGRES:USERNAME", builder);
+var sqlPassword = GetConfigurationKey("POSTGRES:PASSWORD", builder);
+var sqlDatabase = GetConfigurationKey("POSTGRES:DATABASE", builder);
+var host = GetConfigurationKey("POSTGRES:HOST", builder);
+var port = GetConfigurationKey("POSTGRES:PORT", builder);
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -34,6 +40,13 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 
 app.Run();
+
+static string GetConfigurationKey(string key, WebApplicationBuilder builder)
+{
+    var value = builder.Configuration[key] ?? throw new InvalidOperationException($"{key} key is missing");
+
+    return value;
+}
 
 internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
