@@ -1,3 +1,6 @@
+using GameBackendAPI.Data;
+using Npgsql;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var sqlUsername = GetConfigurationKey("POSTGRES:USERNAME", builder);
@@ -6,8 +9,23 @@ var sqlDatabase = GetConfigurationKey("POSTGRES:DATABASE", builder);
 var host = GetConfigurationKey("POSTGRES:HOST", builder);
 var port = GetConfigurationKey("POSTGRES:PORT", builder);
 
+if (!int.TryParse(port, out int parsedPort))
+{
+    throw new InvalidOperationException("POSTGRES:PORT must be a number");
+}
+
+var connectionStringBuilder = new NpgsqlConnectionStringBuilder
+{
+    Host = host,
+    Port = parsedPort,
+    Username = sqlUsername,
+    Password = sqlPassword,
+    Database = sqlDatabase
+};
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
