@@ -1,4 +1,5 @@
 using GameBackendAPI.Data;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,7 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOpenApi();
 
@@ -42,6 +44,9 @@ var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
+
+app.MapHealthChecks("/health-readiness", new() { Predicate = c => c.Tags.Contains("readiness") });
+app.MapHealthChecks("/health-liveness", new() { Predicate = c => c.Tags.Contains("liveness") });
 
 app.MapGet("/weatherforecast", () =>
 {
