@@ -11,8 +11,14 @@ namespace GameBackendAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.HasPostgresExtension("citext");
+
             modelBuilder.Entity<Player>().Property(p => p.Username).HasMaxLength(50);
+            modelBuilder.Entity<Player>().Property(p => p.Username).HasColumnType("citext");
+            modelBuilder.Entity<Player>().Property(p => p.Email).HasMaxLength(254);
+            modelBuilder.Entity<Player>().Property(p => p.Email).HasColumnType("citext");
             modelBuilder.Entity<Player>().HasIndex(p => p.Username).IsUnique();
+            modelBuilder.Entity<Player>().HasIndex(p => p.Email).IsUnique();
             modelBuilder.Entity<Player>().Property(p => p.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
