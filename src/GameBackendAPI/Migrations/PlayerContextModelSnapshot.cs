@@ -41,6 +41,11 @@ namespace GameBackendAPI.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("citext");
 
+                    b.Property<string>("HashedPassword")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
