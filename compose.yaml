@@ -2,13 +2,33 @@ services:
   db:
     image: postgres:19
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES__USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+      POSTGRES_DB: ${POSTGRES__DATABASE}
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+  api:
+    build:
+      context: .
+      dockerfile: ./src/GameBackendAPI/Dockerfile
+    environment:
+      POSTGRES__USERNAME: ${POSTGRES__USERNAME}
+      POSTGRES__PASSWORD: ${POSTGRES__PASSWORD}
+      POSTGRES__DATABASE: ${POSTGRES__DATABASE} 
+      POSTGRES__HOST: db
+      POSTGRES__PORT: 5432
+    ports:
+      - "8080:8080"
+    depends_on: 
+      db:
+        condition: service_healthy
 
 volumes: 
   db_data:
