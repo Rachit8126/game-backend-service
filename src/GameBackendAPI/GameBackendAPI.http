@@ -4,3 +4,11 @@ GET {{GameBackendAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{GameBackendAPI_HostAddress}}/health-readiness/
+
+###
+
+GET {{GameBackendAPI_HostAddress}}/health-liveness/
+
+###
