@@ -1,4 +1,5 @@
 using GameBackendAPI.Data;
+using GameBackendAPI.Security;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 
@@ -26,6 +27,8 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddSingleton<ICustomPasswordHasher, SodiumHasher>();
+
 builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOpenApi();
