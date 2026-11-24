@@ -1,14 +1,73 @@
 @GameBackendAPI_HostAddress = http://localhost:5192
 
-GET {{GameBackendAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-
 GET {{GameBackendAPI_HostAddress}}/health-readiness/
 
 ###
 
 GET {{GameBackendAPI_HostAddress}}/health-liveness/
+
+###
+
+# Valid Registration
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test@test.com", "Password": "TestPassword", "Username": "TestUser"}
+
+###
+
+# The same username again, with a different email
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test2@test.com", "Password": "TestPassword", "Username": "TestUser"}
+
+###
+
+# The same username in a different case
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test@test.com", "Password": "TestPassword", "Username": "testuser"}
+
+###
+
+# The same email, with a different username
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test@test.com", "Password": "TestPassword", "Username": "TestUser_1"}
+
+###
+
+#  An invalid email
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "testtest.com", "Password": "TestPassword", "Username": "testuser"}
+
+###
+
+#  A password shorter than 8 characters
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test1@test.com", "Password": "TestPas", "Username": "TestUser_1"}
+
+###
+
+#  A username containing a space
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test2@test.com", "Password": "TestPassword", "Username": "Test User"}
+
+###
+
+# A missing field
+POST {{GameBackendAPI_HostAddress}}/players
+Content-type: application/json
+
+{"Email": "test@test.com", "Username": "TestUser"}
 
 ###

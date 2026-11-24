@@ -1,4 +1,6 @@
 using GameBackendAPI.Data;
+using GameBackendAPI.Endpoints;
+using GameBackendAPI.Security;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 
@@ -26,6 +28,8 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddSingleton<ICustomPasswordHasher, SodiumHasher>();
+builder.Services.AddValidation();
 builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOpenApi();
@@ -40,27 +44,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
 app.MapHealthChecks("/health-readiness", new() { Predicate = c => c.Tags.Contains("readiness") });
 app.MapHealthChecks("/health-liveness", new() { Predicate = c => c.Tags.Contains("liveness") });
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.MapPlayerEndpoints();
 
 app.Run();
 
@@ -69,9 +56,4 @@ static string GetConfigurationKey(string key, WebApplicationBuilder builder)
     var value = builder.Configuration[key] ?? throw new InvalidOperationException($"{key} key is missing");
 
     return value;
-}
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
