@@ -1,6 +1,7 @@
 using GameBackendAPI.Data;
 using GameBackendAPI.Endpoints;
-using GameBackendAPI.Security;
+using GameBackendAPI.Security.Authentication;
+using GameBackendAPI.Security.Hashing;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 

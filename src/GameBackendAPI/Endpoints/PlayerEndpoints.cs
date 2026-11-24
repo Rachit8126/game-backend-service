@@ -2,7 +2,7 @@
 using GameBackendAPI.DTOs;
 using GameBackendAPI.Entities;
 using GameBackendAPI.Mappings;
-using GameBackendAPI.Security;
+using GameBackendAPI.Security.Hashing;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 

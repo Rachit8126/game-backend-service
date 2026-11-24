@@ -1,4 +1,4 @@
-﻿using GameBackendAPI.Security;
+﻿using GameBackendAPI.Security.Hashing;
 
 namespace GameBackendAPI.Tests
 {

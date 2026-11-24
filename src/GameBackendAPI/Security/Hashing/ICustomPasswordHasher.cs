@@ -1,4 +1,4 @@
-﻿namespace GameBackendAPI.Security
+﻿namespace GameBackendAPI.Security.Hashing
 {
     public interface ICustomPasswordHasher
     {
