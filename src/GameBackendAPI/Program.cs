@@ -34,6 +34,7 @@ builder.Services.AddValidation();
 builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOpenApi();
+builder.Services.AddOptions<AuthSettings>().Bind(builder.Configuration.GetSection("Auth")).ValidateDataAnnotations().ValidateOnStart();
 
 var app = builder.Build();
 
