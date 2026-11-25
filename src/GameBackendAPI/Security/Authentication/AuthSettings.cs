@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace GameBackendAPI.Security.Authentication
 {
@@ -15,5 +17,10 @@ namespace GameBackendAPI.Security.Authentication
 
         [Required, MinLength(32)]
         public required string Key { get; set; }
+
+        public SymmetricSecurityKey GetSymmetricSecurityKey()
+        {
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+        }
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using System.Text;
 
 namespace GameBackendAPI.Security.Authentication
 {
@@ -13,7 +12,7 @@ namespace GameBackendAPI.Security.Authentication
 
         public string CreateToken(Player player)
         {
-            SymmetricSecurityKey symmetricSecurityKey = new(Encoding.UTF8.GetBytes(_authSettings.Key));
+            SymmetricSecurityKey symmetricSecurityKey = _authSettings.GetSymmetricSecurityKey();
             SigningCredentials signingCredentials = new(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>() {
                 new(JwtRegisteredClaimNames.Sub, player.Id.ToString()),
