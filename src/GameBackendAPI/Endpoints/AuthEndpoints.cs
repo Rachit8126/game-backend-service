@@ -21,7 +21,7 @@ namespace GameBackendAPI.Endpoints
 
             bool isValid = passwordHasher.Verify(loginRequestDTO.Password, player?.HashedPassword);
 
-            if (!isValid)
+            if (!isValid || player == null)
             {
                 return Results.Problem(statusCode: 401, title: "Login Failed", detail: "Invalid email or password");
             }
@@ -31,7 +31,7 @@ namespace GameBackendAPI.Endpoints
             LoginResponseDTO loginResponseDTO = new()
             {
                 Token = token,
-                TokenType = "JWT",
+                TokenType = "Bearer",
                 ExpiryInSeconds = authSettings.Value.LifeTimeInSeconds
             };
 
