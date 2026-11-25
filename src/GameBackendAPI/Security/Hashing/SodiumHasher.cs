@@ -2,13 +2,26 @@
 {
     public class SodiumHasher : ICustomPasswordHasher
     {
+        private readonly string _dummyHash;
+
         private const int _operationLimit = 3;
         private const int _memoryLimit = 19922944;
 
-        public bool Verify(string input, string hash)
+        public SodiumHasher()
+        {
+            _dummyHash = Sodium.PasswordHash.ArgonHashString("HelloWorld", _operationLimit, _memoryLimit);
+        }
+
+        public bool Verify(string input, string? hash)
         {
             if (String.IsNullOrEmpty(input))
             {
+                return false;
+            }
+
+            if (String.IsNullOrEmpty(hash))
+            {
+                Sodium.PasswordHash.ArgonHashStringVerify(_dummyHash, input);
                 return false;
             }
 

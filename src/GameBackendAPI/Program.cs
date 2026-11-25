@@ -30,6 +30,7 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSingleton<ICustomPasswordHasher, SodiumHasher>();
+builder.Services.AddSingleton<IAuthTokenService, AuthTokenService>();
 builder.Services.AddValidation();
 builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
