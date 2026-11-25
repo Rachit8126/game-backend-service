@@ -4,6 +4,8 @@ using GameBackendAPI.Security.Authentication;
 using GameBackendAPI.Security.Hashing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace GameBackendAPI.Endpoints
 {
@@ -13,6 +15,15 @@ namespace GameBackendAPI.Endpoints
         {
             var mapGroup = app.MapGroup("/auth");
             mapGroup.MapPost("/login", Login);
+            mapGroup.MapGet("/me", TestAuthEndpoint).RequireAuthorization();
+        }
+
+        private static IResult TestAuthEndpoint(ClaimsPrincipal claimsPrincipal)
+        {
+            var sub = claimsPrincipal.Claims.FirstOrDefault(p => p.Type == JwtRegisteredClaimNames.Sub);
+            var username = claimsPrincipal.Claims.FirstOrDefault(p => p.Type == "username");
+
+            return Results.Ok(new List<string>() { sub?.Value, username?.Value });
         }
 
         private static async Task<IResult> Login(LoginRequestDTO loginRequestDTO, PlayerContext db, ICustomPasswordHasher passwordHasher, IAuthTokenService authTokenService, IOptions<AuthSettings> authSettings)

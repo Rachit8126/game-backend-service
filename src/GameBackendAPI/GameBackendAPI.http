@@ -1,5 +1,7 @@
 @GameBackendAPI_HostAddress = http://localhost:5192
 
+# ------------------ Health -----------------------------
+
 GET {{GameBackendAPI_HostAddress}}/health-readiness/
 
 ###
@@ -7,6 +9,8 @@ GET {{GameBackendAPI_HostAddress}}/health-readiness/
 GET {{GameBackendAPI_HostAddress}}/health-liveness/
 
 ###
+
+# -------------------------- Registration ------------------------------
 
 # Valid Registration
 POST {{GameBackendAPI_HostAddress}}/players
@@ -72,7 +76,10 @@ Content-type: application/json
 
 ###
 
+# --------------------------- Auth ------------------------------
+
 # Fresh User
+# @name GenerateToken
 POST {{GameBackendAPI_HostAddress}}/auth/login
 Content-type: application/json
 
@@ -105,4 +112,21 @@ POST {{GameBackendAPI_HostAddress}}/auth/login
 Content-type: application/json
 
 {"Email": "Test@test.com", "Password": "TestPassword"}
+###
+
+# ---------------------- Test -----------------------
+
+# Valid Header
+GET {{GameBackendAPI_HostAddress}}/auth/me
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+###
+
+# No Header
+GET {{GameBackendAPI_HostAddress}}/auth/me
+###
+
+
+# Garbage Bearer
+GET {{GameBackendAPI_HostAddress}}/auth/me
+Authorization: Bearer {{GenerateToken.response.body.$.token}}abc
 ###
