@@ -1,5 +1,5 @@
 ﻿using GameBackendAPI.Data;
-using GameBackendAPI.DTOs;
+using GameBackendAPI.DTOs.Registration;
 using GameBackendAPI.Entities;
 using GameBackendAPI.Mappings;
 using GameBackendAPI.Security.Hashing;

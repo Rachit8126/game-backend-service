@@ -1,4 +1,4 @@
-﻿using GameBackendAPI.DTOs;
+﻿using GameBackendAPI.DTOs.Registration;
 using GameBackendAPI.Entities;
 
 namespace GameBackendAPI.Mappings
