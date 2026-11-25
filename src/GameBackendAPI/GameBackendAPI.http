@@ -16,7 +16,7 @@ GET {{GameBackendAPI_HostAddress}}/health-liveness/
 POST {{GameBackendAPI_HostAddress}}/players
 Content-type: application/json
 
-{"Email": "test@test.com", "Password": "TestPassword", "Username": "TestUser"}
+{"Email": "test3@test.com", "Password": "TestPassword", "Username": "Test3User"}
 
 ###
 
@@ -114,19 +114,70 @@ Content-type: application/json
 {"Email": "Test@test.com", "Password": "TestPassword"}
 ###
 
-# ---------------------- Test -----------------------
-
-# Valid Header
-GET {{GameBackendAPI_HostAddress}}/auth/me
+# Owner Profile Get
+GET {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
 Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
 ###
 
-# No Header
-GET {{GameBackendAPI_HostAddress}}/auth/me
+# Owner Profile Get without token
+GET {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+
 ###
 
+# Owner Profile Patch
+PATCH {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
 
-# Garbage Bearer
-GET {{GameBackendAPI_HostAddress}}/auth/me
-Authorization: Bearer {{GenerateToken.response.body.$.token}}abc
+{"Email": "Test2@test.com", "Username": "Test2Updated"}
+###
+
+# Owner Profile Patch empty input
+PATCH {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Email": "", "Username": ""}
+###
+
+# Owner Profile Patch empty input
+PATCH {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Email": "Test3@test.com", "Username": "Test3User"}
+###
+
+# Owner Profile Patch only email
+PATCH {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Email": "Test2@test.com"}
+###
+
+# Owner Profile Patch only username
+PATCH {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Username": "TestUpdated"}
+###
+
+# Owner Profile Patch with extra fields
+PATCH {{GameBackendAPI_HostAddress}}/players/me
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Email": "Test2@test.com", "Username": "Test2Updated", "Rating": 10}
+###
+
+# Get public profile player
+GET {{GameBackendAPI_HostAddress}}/players/9
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
 ###
