@@ -27,15 +27,17 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
     Database = sqlDatabase
 };
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSingleton<ICustomPasswordHasher, SodiumHasher>();
 builder.Services.AddSingleton<IAuthTokenService, AuthTokenService>();
+
 builder.Services.AddValidation();
+
 builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
+
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
-builder.Services.AddOpenApi();
 builder.Services.AddOptions<AuthSettings>().Bind(builder.Configuration.GetSection("Auth")).ValidateDataAnnotations().ValidateOnStart();
+
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -51,6 +53,7 @@ app.MapHealthChecks("/health-readiness", new() { Predicate = c => c.Tags.Contain
 app.MapHealthChecks("/health-liveness", new() { Predicate = c => c.Tags.Contains("liveness") });
 
 app.MapPlayerEndpoints();
+app.MapAuthEndpoints();
 
 app.Run();
 

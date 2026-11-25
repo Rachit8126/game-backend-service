@@ -71,3 +71,38 @@ Content-type: application/json
 {"Email": "test@test.com", "Username": "TestUser"}
 
 ###
+
+# Fresh User
+POST {{GameBackendAPI_HostAddress}}/auth/login
+Content-type: application/json
+
+{"Email": "test@test.com", "Password": "TestPassword"}
+###
+
+# Wrong Password
+POST {{GameBackendAPI_HostAddress}}/auth/login
+Content-type: application/json
+
+{"Email": "test@test.com", "Password": "testPasswordWrong"}
+###
+
+# Unknown Email
+POST {{GameBackendAPI_HostAddress}}/auth/login
+Content-type: application/json
+
+{"Email": "testUnknown@test.com", "Password": "TestPassword"}
+###
+
+# Missing field
+POST {{GameBackendAPI_HostAddress}}/auth/login
+Content-type: application/json
+
+{"Email": "test@test.com"}
+###
+
+# Correct email with different case
+POST {{GameBackendAPI_HostAddress}}/auth/login
+Content-type: application/json
+
+{"Email": "Test@test.com", "Password": "TestPassword"}
+###
