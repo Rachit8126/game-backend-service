@@ -1,8 +1,14 @@
 using GameBackendAPI.Data;
 using GameBackendAPI.Endpoints;
-using GameBackendAPI.Security;
+using GameBackendAPI.OpenAPI;
+using GameBackendAPI.Security.Authentication;
+using GameBackendAPI.Security.Hashing;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +32,41 @@ var connectionStringBuilder = new NpgsqlConnectionStringBuilder
     Database = sqlDatabase
 };
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSingleton<ICustomPasswordHasher, SodiumHasher>();
+builder.Services.AddSingleton<IAuthTokenService, AuthTokenService>();
+
 builder.Services.AddValidation();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+builder.Services.AddAuthorization();
+
 builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
+
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
-builder.Services.AddOpenApi();
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme).Configure<IOptions<AuthSettings>>((jwt, auth) =>
+{
+    jwt.MapInboundClaims = false;
+    jwt.TokenValidationParameters = new()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = auth.Value.Issuer,
+        ValidateAudience = true,
+        ValidAudience = auth.Value.Audience,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = auth.Value.GetSymmetricSecurityKey(),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromSeconds(10),
+        ValidAlgorithms = [SecurityAlgorithms.HmacSha256]
+    };
+});
+builder.Services.AddOptions<AuthSettings>().Bind(builder.Configuration.GetSection("Auth")).ValidateDataAnnotations().ValidateOnStart();
+
+builder.Services.AddProblemDetails();
+
+builder.Services.AddOpenApi(o =>
+{
+    o.AddDocumentTransformer<OpenApiDocumentTransformer>();
+    o.AddOperationTransformer<OpenApiOperationTransformer>();
+});
 
 var app = builder.Build();
 
@@ -40,14 +74,25 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+else
+{
+    app.UseExceptionHandler();
 }
 
+app.UseStatusCodePages();
+
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHealthChecks("/health-readiness", new() { Predicate = c => c.Tags.Contains("readiness") });
 app.MapHealthChecks("/health-liveness", new() { Predicate = c => c.Tags.Contains("liveness") });
 
 app.MapPlayerEndpoints();
+app.MapAuthEndpoints();
 
 app.Run();
 

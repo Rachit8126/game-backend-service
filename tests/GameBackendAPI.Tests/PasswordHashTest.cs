@@ -1,4 +1,4 @@
-﻿using GameBackendAPI.Security;
+﻿using GameBackendAPI.Security.Hashing;
 
 namespace GameBackendAPI.Tests
 {
@@ -64,6 +64,14 @@ namespace GameBackendAPI.Tests
         {
             string? password = null;
             Assert.Throws<ArgumentException>(() => _sodiumHasher.GetHash(password));
+        }
+
+        [Fact]
+        public void TestNullHash()
+        {
+            string password = "HelloWorld";
+
+            Assert.False(_sodiumHasher.Verify(password, null));
         }
     }
 }
