@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
       POSTGRES_DB: ${POSTGRES__DATABASE}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - db_data:/var/lib/postgresql
     healthcheck:
@@ -25,11 +25,27 @@ services:
       AUTH__KEY: ${AUTH__SECRET_KEY}
       POSTGRES__HOST: db
       POSTGRES__PORT: 5432
+      REDIS__HOST: redis
+      REDIS__PORT: 6379
     ports:
       - "8080:8080"
     depends_on: 
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+  redis:
+    image: redis:8.8.4
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 volumes: 
   db_data:
+  redis_data:
