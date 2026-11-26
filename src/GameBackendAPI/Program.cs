@@ -1,5 +1,6 @@
 using GameBackendAPI.Data;
 using GameBackendAPI.Endpoints;
+using GameBackendAPI.OpenAPI;
 using GameBackendAPI.Security.Authentication;
 using GameBackendAPI.Security.Hashing;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,8 +60,13 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
 });
 builder.Services.AddOptions<AuthSettings>().Bind(builder.Configuration.GetSection("Auth")).ValidateDataAnnotations().ValidateOnStart();
 
-builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddOpenApi(o =>
+{
+    o.AddDocumentTransformer<OpenApiDocumentTransformer>();
+    o.AddOperationTransformer<OpenApiOperationTransformer>();
+});
 
 var app = builder.Build();
 
@@ -67,6 +74,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 else
 {

@@ -15,10 +15,32 @@ namespace GameBackendAPI.Endpoints
         public static void MapPlayerEndpoints(this IEndpointRouteBuilder app)
         {
             var mapGroup = app.MapGroup("/players").RequireAuthorization();
-            mapGroup.MapPost("/", Register).AllowAnonymous();
-            mapGroup.MapGet("/me", ReturnOwner);
-            mapGroup.MapGet("/{id:int}", ReturnPublic);
-            mapGroup.MapPatch("/me", Patch);
+
+            mapGroup.MapPost("/", Register).AllowAnonymous()
+                .Produces<RegistrationResponseDTO>(StatusCodes.Status201Created)
+                .ProducesValidationProblem()
+                .ProducesProblem(StatusCodes.Status409Conflict)
+                .WithSummary("Register users");
+
+            mapGroup.MapGet("/me", ReturnOwner)
+                .Produces<OwnerProfileDTO>()
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .WithSummary("Gets own data");
+
+            mapGroup.MapGet("/{id:int}", ReturnPublic)
+                .Produces<PublicProfileDTO>()
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .WithSummary("Gets any player public data");
+
+            mapGroup.MapPatch("/me", Patch)
+                .Produces<OwnerProfileDTO>()
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .ProducesProblem(StatusCodes.Status409Conflict)
+                .ProducesProblem(StatusCodes.Status404NotFound)
+                .ProducesValidationProblem()
+                .WithSummary("Update own data");
         }
 
         private static async Task<IResult> Patch(UpdateProfileRequestDTO updateProfileRequestDTO, ClaimsPrincipal user, PlayerContext db)

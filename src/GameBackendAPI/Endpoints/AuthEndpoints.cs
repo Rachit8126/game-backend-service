@@ -12,7 +12,12 @@ namespace GameBackendAPI.Endpoints
         public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
         {
             var mapGroup = app.MapGroup("/auth");
-            mapGroup.MapPost("/login", Login);
+
+            mapGroup.MapPost("/login", Login)
+                .Produces<LoginResponseDTO>()
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .ProducesValidationProblem()
+                .WithSummary("Login users");
         }
 
         private static async Task<IResult> Login(LoginRequestDTO loginRequestDTO, PlayerContext db, ICustomPasswordHasher passwordHasher, IAuthTokenService authTokenService, IOptions<AuthSettings> authSettings)
