@@ -1,5 +1,6 @@
 using GameBackendAPI.Data;
 using GameBackendAPI.Endpoints;
+using GameBackendAPI.HealthChecks;
 using GameBackendAPI.OpenAPI;
 using GameBackendAPI.Security.Authentication;
 using GameBackendAPI.Security.Hashing;
@@ -9,29 +10,44 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Scalar.AspNetCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var sqlUsername = GetConfigurationKey("POSTGRES:USERNAME", builder);
-var sqlPassword = GetConfigurationKey("POSTGRES:PASSWORD", builder);
-var sqlDatabase = GetConfigurationKey("POSTGRES:DATABASE", builder);
-var host = GetConfigurationKey("POSTGRES:HOST", builder);
-var port = GetConfigurationKey("POSTGRES:PORT", builder);
+var psqlUsername = GetConfigurationKey("POSTGRES:USERNAME", builder);
+var psqlPassword = GetConfigurationKey("POSTGRES:PASSWORD", builder);
+var psqlDatabase = GetConfigurationKey("POSTGRES:DATABASE", builder);
 
-if (!int.TryParse(port, out int parsedPort))
+var psqlHost = GetConfigurationKey("POSTGRES:HOST", builder);
+var psqlPort = GetConfigurationKey("POSTGRES:PORT", builder);
+
+var redisHost = GetConfigurationKey("REDIS:HOST", builder);
+var redisPort = GetConfigurationKey("REDIS:PORT", builder);
+
+if (!int.TryParse(psqlPort, out int parsedPsqlPort))
 {
     throw new InvalidOperationException("POSTGRES:PORT must be a number");
 }
 
+if (!int.TryParse(redisPort, out int parsedRedisPort))
+{
+    throw new InvalidOperationException("REDIS:PORT must be a number");
+}
+
 var connectionStringBuilder = new NpgsqlConnectionStringBuilder
 {
-    Host = host,
-    Port = parsedPort,
-    Username = sqlUsername,
-    Password = sqlPassword,
-    Database = sqlDatabase
+    Host = psqlHost,
+    Port = parsedPsqlPort,
+    Username = psqlUsername,
+    Password = psqlPassword,
+    Database = psqlDatabase
 };
 
+var configurationOptions = new ConfigurationOptions();
+configurationOptions.EndPoints.Add($"{redisHost}:{redisPort}");
+configurationOptions.AbortOnConnectFail = false;
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(p => ConnectionMultiplexer.Connect(configurationOptions));
 builder.Services.AddSingleton<ICustomPasswordHasher, SodiumHasher>();
 builder.Services.AddSingleton<IAuthTokenService, AuthTokenService>();
 
@@ -39,7 +55,9 @@ builder.Services.AddValidation();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddAuthorization();
 
-builder.Services.AddHealthChecks().AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"]);
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"])
+    .AddCheck<RedisHealthCheck>("redisCheck", tags: ["readiness"]);
 
 builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme).Configure<IOptions<AuthSettings>>((jwt, auth) =>
