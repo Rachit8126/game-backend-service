@@ -23,7 +23,7 @@ namespace GameBackendAPI.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GameBackendAPI.Entities.Player", b =>
+            modelBuilder.Entity("GameBackendAPI.Entities.PlayerEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,6 +63,43 @@ namespace GameBackendAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("GameBackendAPI.Entities.ScoreEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("SubmissionTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("SubmissionTime");
+
+                    b.ToTable("Scores");
+                });
+
+            modelBuilder.Entity("GameBackendAPI.Entities.ScoreEntity", b =>
+                {
+                    b.HasOne("GameBackendAPI.Entities.PlayerEntity", null)
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

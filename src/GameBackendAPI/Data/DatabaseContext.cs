@@ -6,7 +6,7 @@ namespace GameBackendAPI.Data
     public class DatabaseContext(DbContextOptions<DatabaseContext> dbContextOptions) : DbContext(dbContextOptions)
     {
         public DbSet<PlayerEntity> Players => Set<PlayerEntity>();
-        //public DbSet<ScoreEntity> Scores => Set<ScoreEntity>();
+        public DbSet<ScoreEntity> Scores => Set<ScoreEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,9 @@ namespace GameBackendAPI.Data
             modelBuilder.Entity<PlayerEntity>().HasIndex(p => p.Email).IsUnique();
             modelBuilder.Entity<PlayerEntity>().Property(p => p.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            //modelBuilder.Entity<ScoreEntity>().Property(p => p.SubmissionTime).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            //modelBuilder.Entity<ScoreEntity>().HasIndex(p => p.SubmissionTime);
-            //modelBuilder.Entity<ScoreEntity>().HasOne<PlayerEntity>().WithMany().HasForeignKey(p => p.PlayerId);
+            modelBuilder.Entity<ScoreEntity>().Property(p => p.SubmissionTime).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            modelBuilder.Entity<ScoreEntity>().HasIndex(p => p.SubmissionTime);
+            modelBuilder.Entity<ScoreEntity>().HasOne<PlayerEntity>().WithMany().HasForeignKey(p => p.PlayerId);
         }
     }
 }
