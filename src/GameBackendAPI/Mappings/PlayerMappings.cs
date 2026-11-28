@@ -6,7 +6,7 @@ namespace GameBackendAPI.Mappings
 {
     public static class PlayerMappings
     {
-        public static RegistrationResponseDTO ToRegistrationDTO(this Player player)
+        public static RegistrationResponseDTO ToRegistrationDTO(this PlayerEntity player)
         {
             RegistrationResponseDTO registrationResponseDTO = new()
             {
@@ -19,7 +19,7 @@ namespace GameBackendAPI.Mappings
             return registrationResponseDTO;
         }
 
-        public static PublicProfileDTO ToPublicProfileDTO(this Player player)
+        public static PublicProfileDTO ToPublicProfileDTO(this PlayerEntity player)
         {
             PublicProfileDTO publicProfileDTO = new()
             {
@@ -31,7 +31,7 @@ namespace GameBackendAPI.Mappings
             return publicProfileDTO;
         }
 
-        public static OwnerProfileDTO ToOwnerProfileDTO(this Player player)
+        public static OwnerProfileDTO ToOwnerProfileDTO(this PlayerEntity player)
         {
             OwnerProfileDTO ownerProfileDTO = new()
             {
@@ -44,7 +44,7 @@ namespace GameBackendAPI.Mappings
             return ownerProfileDTO;
         }
 
-        public static void Patch(this Player player, UpdateProfileRequestDTO updateProfileRequestDTO)
+        public static void Patch(this PlayerEntity player, UpdateProfileRequestDTO updateProfileRequestDTO)
         {
             if (updateProfileRequestDTO.Email != null)
             {

@@ -56,10 +56,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<PlayerContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"])
+    .AddDbContextCheck<DatabaseContext>(tags: ["readiness"]).AddCheck("self", () => HealthCheckResult.Healthy(), ["liveness"])
     .AddCheck<RedisHealthCheck>("redisCheck", tags: ["readiness"]);
 
-builder.Services.AddNpgsql<PlayerContext>(connectionStringBuilder.ConnectionString);
+builder.Services.AddNpgsql<DatabaseContext>(connectionStringBuilder.ConnectionString);
 builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme).Configure<IOptions<AuthSettings>>((jwt, auth) =>
 {
     jwt.MapInboundClaims = false;

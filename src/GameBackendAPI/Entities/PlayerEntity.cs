@@ -1,6 +1,6 @@
 ﻿namespace GameBackendAPI.Entities
 {
-    public class Player
+    public class PlayerEntity
     {
         public int Id { get; set; }
         public int Rating { get; set; } = 0;

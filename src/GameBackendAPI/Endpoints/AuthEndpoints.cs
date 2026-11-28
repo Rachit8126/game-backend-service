@@ -20,7 +20,7 @@ namespace GameBackendAPI.Endpoints
                 .WithSummary("Login users");
         }
 
-        private static async Task<IResult> Login(LoginRequestDTO loginRequestDTO, PlayerContext db, ICustomPasswordHasher passwordHasher, IAuthTokenService authTokenService, IOptions<AuthSettings> authSettings)
+        private static async Task<IResult> Login(LoginRequestDTO loginRequestDTO, DatabaseContext db, ICustomPasswordHasher passwordHasher, IAuthTokenService authTokenService, IOptions<AuthSettings> authSettings)
         {
             var player = await db.Players.AsNoTracking().FirstOrDefaultAsync(p => p.Email == loginRequestDTO.Email);
 

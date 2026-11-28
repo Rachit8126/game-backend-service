@@ -10,7 +10,7 @@ namespace GameBackendAPI.Security.Authentication
     {
         private readonly AuthSettings _authSettings = options.Value;
 
-        public string CreateToken(Player player)
+        public string CreateToken(PlayerEntity player)
         {
             SymmetricSecurityKey symmetricSecurityKey = _authSettings.GetSymmetricSecurityKey();
             SigningCredentials signingCredentials = new(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);

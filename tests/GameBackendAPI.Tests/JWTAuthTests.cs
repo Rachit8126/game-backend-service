@@ -15,7 +15,7 @@ namespace GameBackendAPI.Tests
             LifeTimeInSeconds = 300
         }));
 
-        private readonly Player _player = new()
+        private readonly PlayerEntity _player = new()
         {
             Id = 12345,
             Email = "test@mail.com",

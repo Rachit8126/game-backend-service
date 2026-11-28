@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GameBackendAPI.Migrations
 {
-    [DbContext(typeof(PlayerContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20261122094621_addPasswordHash")]
     partial class addPasswordHash
     {

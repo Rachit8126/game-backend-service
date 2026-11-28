@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GameBackendAPI.Migrations
 {
-    [DbContext(typeof(PlayerContext))]
+    [DbContext(typeof(DatabaseContext))]
     partial class PlayerContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

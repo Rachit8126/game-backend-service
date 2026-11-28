@@ -43,7 +43,7 @@ namespace GameBackendAPI.Endpoints
                 .WithSummary("Update own data");
         }
 
-        private static async Task<IResult> Patch(UpdateProfileRequestDTO updateProfileRequestDTO, ClaimsPrincipal user, PlayerContext db)
+        private static async Task<IResult> Patch(UpdateProfileRequestDTO updateProfileRequestDTO, ClaimsPrincipal user, DatabaseContext db)
         {
             int? id = user.GetIntId();
 
@@ -73,7 +73,7 @@ namespace GameBackendAPI.Endpoints
             }
         }
 
-        private static async Task<IResult> ReturnPublic(int id, PlayerContext db)
+        private static async Task<IResult> ReturnPublic(int id, DatabaseContext db)
         {
             var player = await db.Players.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
 
@@ -85,7 +85,7 @@ namespace GameBackendAPI.Endpoints
             return Results.Ok(player.ToPublicProfileDTO());
         }
 
-        private static async Task<IResult> ReturnOwner(ClaimsPrincipal user, PlayerContext db)
+        private static async Task<IResult> ReturnOwner(ClaimsPrincipal user, DatabaseContext db)
         {
             int? id = user.GetIntId();
 
@@ -104,11 +104,11 @@ namespace GameBackendAPI.Endpoints
             return Results.Ok(player.ToOwnerProfileDTO());
         }
 
-        private static async Task<IResult> Register(RegistrationRequestDTO registrationRequestDTO, PlayerContext db, ICustomPasswordHasher passwordHasher)
+        private static async Task<IResult> Register(RegistrationRequestDTO registrationRequestDTO, DatabaseContext db, ICustomPasswordHasher passwordHasher)
         {
             string hashedPassword = passwordHasher.GetHash(registrationRequestDTO.Password);
 
-            Player player = new()
+            PlayerEntity player = new()
             {
                 Username = registrationRequestDTO.Username,
                 Email = registrationRequestDTO.Email,

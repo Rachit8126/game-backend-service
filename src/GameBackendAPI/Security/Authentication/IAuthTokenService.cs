@@ -4,6 +4,6 @@ namespace GameBackendAPI.Security.Authentication
 {
     public interface IAuthTokenService
     {
-        public string CreateToken(Player player);
+        public string CreateToken(PlayerEntity player);
     }
 }

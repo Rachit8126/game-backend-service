@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GameBackendAPI.Migrations
 {
-    [DbContext(typeof(PlayerContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20261122095520_addPasswordHashMaxLengthUpdate")]
     partial class addPasswordHashMaxLengthUpdate
     {
