@@ -16,7 +16,7 @@ GET {{GameBackendAPI_HostAddress}}/health-liveness/
 POST {{GameBackendAPI_HostAddress}}/players
 Content-type: application/json
 
-{"Email": "test3@test.com", "Password": "TestPassword", "Username": "Test3User"}
+{"Email": "test@test.com", "Password": "TestPassword", "Username": "TestUser"}
 
 ###
 
@@ -180,4 +180,53 @@ GET {{GameBackendAPI_HostAddress}}/players/9
 Content-type: application/json
 Authorization: Bearer {{GenerateToken.response.body.$.token}}
 
+###
+
+# -------------------------------------- Scores -------------------------------------------
+
+# Submit Valid Score
+POST {{GameBackendAPI_HostAddress}}/scores
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Score": 1265}
+###
+
+# Submit Invalid Negative Score
+POST {{GameBackendAPI_HostAddress}}/scores
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Score": -1265}
+###
+
+# Submit Invalid Above Maximum Score
+POST {{GameBackendAPI_HostAddress}}/scores
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Score": 126500}
+###
+
+# Submit null Score
+POST {{GameBackendAPI_HostAddress}}/scores
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{}
+###
+
+# Submit Valid Score with no token
+POST {{GameBackendAPI_HostAddress}}/scores
+Content-type: application/json
+
+{"Score": 1265}
+###
+
+# Submit Valid Score with playerID
+POST {{GameBackendAPI_HostAddress}}/scores
+Content-type: application/json
+Authorization: Bearer {{GenerateToken.response.body.$.token}}
+
+{"Score": 1265, "PlayerId": 1}
 ###

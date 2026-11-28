@@ -111,6 +111,7 @@ app.MapHealthChecks("/health-liveness", new() { Predicate = c => c.Tags.Contains
 
 app.MapPlayerEndpoints();
 app.MapAuthEndpoints();
+app.MapScoreEndpoints();
 
 app.Run();
 
